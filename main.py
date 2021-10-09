@@ -1,8 +1,8 @@
-import dotenv
 from flask import Flask, Response, request
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
-import mysql.connector
+import jwt
+import datetime
 import json
 import os
 
@@ -11,9 +11,9 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("MYSQL_URI")
+app.config['SECRET_KEY'] = os.environ.get('SECRET_SHH')
 
 db = SQLAlchemy(app)
-
 
 class usuarios(db.Model):
 
@@ -26,7 +26,8 @@ class usuarios(db.Model):
     endereco_usuario = db.Column(db.String(200))
 
     def to_json(self):
-        return {"id_usuario": self.id_usuario,
+        return {
+                "id_usuario": self.id_usuario,
                 "apelido_usuario": self.apelido_usuario,
                 "senha_usuario": self.senha_usuario,
                 "email_usuario": self.email_usuario,
@@ -48,14 +49,17 @@ def res_frame(status, res, res_data, message=False):
 @app.route("/signup", methods=["POST"])
 def signup():
 
-    ## username, password, email, nomeCompleto, idade, endereco
     body = request.get_json()
 
     try:
         usuario = usuarios(
             apelido_usuario=body["username"],
-            email_usuario=body["email"]
+            senha_usuario=body["senha"],
+            email_usuario=body["email"],
+            nome_usuario=body["nome_completo"],
+            endereco_usuario=body["endereco"]
         )
+
 
         db.session.add(usuario)
         db.session.commit()
@@ -72,17 +76,31 @@ def signin():
     body = request.get_json()
 
     try:
-        user_exists = usuarios.query.filter_by(
+        usuario = usuarios.query.filter_by(
             email_usuario=body['email'],
             senha_usuario=body['senha']
         ).first()
 
-        return res_frame(201, "usuario", user_exists.to_json(), "Usuário Existe")
+
+        if usuario.email_usuario and usuario.senha_usuario:
+            token = jwt.encode({
+                'id':usuario.id_usuario,
+                'username':usuario.apelido_usuario,
+                'email':usuario.email_usuario,
+                'nome_completo':usuario.nome_usuario,
+                'idade':usuario.idade_usuario,
+                'endereco':usuario.endereco_usuario,
+                'exp':datetime.datetime.utcnow() + datetime.timedelta(minutes=30), 
+            },
+            app.config['SECRET_KEY']
+            )
+
+        return res_frame(200, "token", token, "Acesso Concedido")
 
     except Exception as err:
         print(err)
-        if user_exists == None:
-            return res_frame(400, "usuario", {}, "Usuário Inexistente")
+        if usuario == None:
+            return res_frame(406, "", {}, "Usuário Inexistente")
         else:
             return res_frame(400, "", {}, "Erro ao Realizar Login")
 
