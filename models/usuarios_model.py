@@ -1,11 +1,7 @@
-from flask_sqlalchemy import SQLAlchemy
+from repositories.mysql_db import db
 
-app = ''
-
-db = SQLAlchemy(app)
-
-class usuarios(db.model):
-    id_usuario = db.Column(db.Integer, primary_key=True)
+class usuarios(db.Model):
+    id_usuario = db.Column(db.Integer, auto_increment=True, primary_key=True)
     apelido_usuario = db.Column(db.String(15))
     senha_usuario = db.Column(db.String(32))
     email_usuario = db.Column(db.String(70))
@@ -14,11 +10,12 @@ class usuarios(db.model):
     endereco_usuario = db.Column(db.String(200))
 
     def to_json(self):
-        return {"id_usuario": self.id_usuario,
+        return {
+                "id_usuario": self.id_usuario,
                 "apelido_usuario": self.apelido_usuario,
                 "senha_usuario": self.senha_usuario,
                 "email_usuario": self.email_usuario,
                 "nome_usuario": self.nome_usuario,
                 "endereco_usuario": self.endereco_usuario,
                 }
-
+pass
