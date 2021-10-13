@@ -38,4 +38,4 @@ def signin():
     return res_frame(res[0], res[1], res[2], res[3])
 
 
-app.run(host="localhost", port=8000, debug=True)
+app.run(host="localhost", port=os.environ.get("API_PORT"), debug=True)
