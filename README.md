@@ -4,7 +4,7 @@
 
 ### Versão necessária: Python 3.9.7
 
-#### Em seu ambiente virutal
+#### Em seu ambiente virtual
 
 Na raiz do projeto, execute o seguinte comando para instalar as dependências necessárias:
 ```bash
@@ -45,7 +45,7 @@ Abra o arquivo "db-structure.sql" em seu MySql Workbench e execute a query
 
 ## 2 - Variáveis de ambiente
 
-No diretório Raiz do projeto, crie um arquvio ".env" e edite-o da seguinte forma:
+No diretório raiz do projeto, crie um arquvio ".env" e edite-o da seguinte forma:
 ```dotenv
 DB_USER=[usuario_do_bd]
 DB_PASS=[senha_do_bd]
