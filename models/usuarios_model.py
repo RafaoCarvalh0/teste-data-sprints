@@ -1,7 +1,7 @@
 from repositories.mysql_db import db
 
 class usuarios(db.Model):
-    id_usuario = db.Column(db.Integer, auto_increment=True, primary_key=True)
+    id_usuario = db.Column(db.BigInteger, primary_key=True)
     apelido_usuario = db.Column(db.String(15))
     senha_usuario = db.Column(db.String(32))
     email_usuario = db.Column(db.String(70))
